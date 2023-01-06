@@ -1,5 +1,6 @@
 package vttp2022.paf.assessment.eshop.models;
 
+
 // DO NOT CHANGE THIS CLASS
 public class LineItem {
 

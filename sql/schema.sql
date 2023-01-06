@@ -24,8 +24,8 @@ VALUES ('dursley', '4 Privet Drive, Little Whinging, Surrey', 'dursley@gmail.com
 CREATE TABLE 'orders'
 (
     'order_id' varchar(8) not null,
-    'delivery_id' varchar(8) not null,
-    'status' varchar(32) not null,
+    'delivery_id' varchar(8),
+    'status' varchar(32),
     'order_date' varchar(32) not null
     PRIMARY KEY('order_id')
 );

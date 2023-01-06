@@ -14,11 +14,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import vttp2022.paf.assessment.eshop.models.LineItem;
 import vttp2022.paf.assessment.eshop.models.Order;
 
+@Repository
 public class OrderRepository {
 	
 	@Autowired
@@ -42,7 +44,6 @@ public class OrderRepository {
         return jdbcTemplate.update(SQL_UPDATE_ORDER_BY_ORDER_ID,
                 order.getDeliveryId(),
 				order.getStatus(),
-				order.getOrderDate(),
 				order.getOrderId()
 				) > 0;
     }
@@ -58,19 +59,18 @@ public class OrderRepository {
                 PreparedStatement ps = conn.prepareStatement(SQL_INSERT_ORDER,
                         Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, order.getOrderId());
-                ps.setString(2, order.getDeliveryId());
-                ps.setString(3, order.getStatus());
-                ps.setString(4, order.getOrderDate().toString());
+                ps.setString(2, order.getOrderDate().toString());
                 return ps;
             }, keyholder);
-            BigInteger primaryKeyVal = (BigInteger) keyholder.getKey();
-            order.setOrderId(Integer.toString(primaryKeyVal.intValue()));
+            // BigInteger primaryKeyVal = (BigInteger) keyholder.getKey();
+            // order.setOrderId(Integer.toString(primaryKeyVal.intValue()));
+			addLineItems(order);
 
         } catch (DataIntegrityViolationException e) {
             Order existingOrder = searchOrderByOrderId(order.getOrderId());
 			existingOrder.setDeliveryId(order.getDeliveryId());
-			existingOrder.setDeliveryId(order.getStatus());
-			existingOrder.setDeliveryId(order.getOrderDate().toString());
+			existingOrder.setStatus(order.getStatus());
+			existingOrder.setOrderDate(order.getOrderDate());
 
             if (updateOrder(existingOrder))
                 order.setOrderId(existingOrder.getOrderId());
@@ -79,7 +79,6 @@ public class OrderRepository {
         return order;
 
 	}
-
 
 	// insert into line_item table
 	@Transactional
