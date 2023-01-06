@@ -1,8 +1,19 @@
 package vttp2022.paf.assessment.eshop.models;
 
+import java.io.ByteArrayInputStream;
+import java.text.DateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
+
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
 
 // DO NOT CHANGE THIS CLASS
 public class Order {
@@ -15,6 +26,24 @@ public class Order {
 	private String status;
 	private Date orderDate = new Date();
 	private List<LineItem> lineItems = new LinkedList<>();
+
+	// constructor
+	public Order () {
+
+	}
+
+	// constructor with unique id and order date
+	public Order (String deliveryId, String name, String address, String email, String status) {
+		this.orderId = UUID.randomUUID().toString().substring(0, 8);
+		ZoneId defaultZoneId = ZoneId.systemDefault();
+		LocalDate localDate = LocalDate.now();
+		this.orderDate = Date.from(localDate.atStartOfDay(defaultZoneId).toInstant());
+		this.deliveryId = deliveryId;
+		this.name = name;
+		this.address = address;
+		this.email = email;
+		this.status = status;
+	}
 
 	public String getOrderId() { return this.orderId; }
 	public void setOrderId(String orderId) { this.orderId = orderId; }
@@ -53,5 +82,39 @@ public class Order {
 	public List<LineItem> getLineItems() { return this.lineItems; }
 	public void setLineItems(List<LineItem> lineItems) { this.lineItems = lineItems; }
 	public void addLineItem(LineItem lineItem) { this.lineItems.add(lineItem); }
+
+	
+	// helper function, to read sql row set
+	public static Order create(SqlRowSet rs) {
+        Order order = new Order();
+		order.setOrderId(rs.getString("order_id"));;
+		order.setDeliveryId(rs.getString("delivery_id"));
+		order.setStatus(rs.getString("status"));
+		ZoneId defaultZoneId = ZoneId.systemDefault();
+		LocalDate localDate = LocalDate.now();
+		order.setOrderDate(Date.from(localDate.atStartOfDay(defaultZoneId).toInstant()));
+        return order;
+    }
+	
+	
+	// helper function, to read json string and create order model
+	public static Order create(String jsonStr) throws Exception {
+        JsonReader reader = Json.createReader(
+                new ByteArrayInputStream(jsonStr.getBytes()));
+        return create(reader.readObject());
+    }
+
+	// helper function, to read json object and create order model
+    private static Order create(JsonObject readObject) {
+        final Order order = new Order();
+		order.setOrderId(UUID.randomUUID().toString().substring(0, 8));
+		order.setDeliveryId(readObject.getString("delivery_id"));
+		order.setStatus(readObject.getString("status"));
+		ZoneId defaultZoneId = ZoneId.systemDefault();
+		LocalDate localDate = LocalDate.now();
+		order.setOrderDate(Date.from(localDate.atStartOfDay(defaultZoneId).toInstant()));
+        return order;
+    }
+	
 }
 
