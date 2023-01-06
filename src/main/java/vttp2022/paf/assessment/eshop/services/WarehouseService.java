@@ -10,6 +10,6 @@ public class WarehouseService {
 	public OrderStatus dispatch(Order order) {
 
 		// TODO: Task 4
-
+		return null;
 	}
 }
