@@ -14,8 +14,8 @@ public class Queries {
 
     public static final String SQL_GET_NUMBER_DISPATCHED_PENDING = """
             SELECT
-                o.id as order_id,
-                DATE_FORMAT(o.order_date, \"%d/%m/%Y\") as order_date,
+                order_id,
+                name,
                 o.customer_id as customer_id,
                 sum(od.quantity * od.unit_price) as total_price,
                 sum(od.quantity * od.unit_price * od.discount) as discount,
