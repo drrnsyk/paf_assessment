@@ -2,7 +2,6 @@ package vttp2022.paf.assessment.eshop.respositories;
 
 import static vttp2022.paf.assessment.eshop.respositories.Queries.*;
 
-import java.math.BigInteger;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.LinkedList;
@@ -19,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import vttp2022.paf.assessment.eshop.models.LineItem;
 import vttp2022.paf.assessment.eshop.models.Order;
+import vttp2022.paf.assessment.eshop.models.OrderDetails;
 
 @Repository
 public class OrderRepository {
@@ -100,4 +100,17 @@ public class OrderRepository {
         // Batch update
         jdbcTemplate.batchUpdate(SQL_INSERT_LINE_ITEM, data);
     }
+
+	public OrderDetails getNumberOfDispatchAndPending(String name) {
+        // prevent inheritance
+        final List<OrderDetails> ordDetails = new LinkedList<>();
+        // perform the query
+        final SqlRowSet rs = jdbcTemplate.queryForRowSet(SQL_GET_NUMBER_DISPATCHED_PENDING, name);
+
+        while (rs.next()) {
+            ordDetails.add(OrderDetails.create(rs));
+        }
+        return ordDetails.get(0);
+    }
+
 }

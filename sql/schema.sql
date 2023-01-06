@@ -40,3 +40,14 @@ CREATE TABLE 'line_item'
     KEY 'fk_order_id' ('order_id'),
     CONSTRAINT 'fk_order_id' FOREIGN KEY ('order_id') REFERENCES 'orders' ('order_id'),
 );
+
+CREATE TABLE order_status 
+(
+    order_id varchar(8) not null,
+    delivery_id varchar(128) not null,
+    status varchar(32) not null,
+    status_update timestamp not null,
+    PRIMARY KEY(delivery_id),
+	KEY fk_order_id_status (order_id),
+    CONSTRAINT fk_order_id_status FOREIGN KEY (order_id) REFERENCES orders (order_id)
+);
